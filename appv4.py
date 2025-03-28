@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Cast Substitution Tool", layout="centered")
+st.set_page_config(page_title="Cast Substitution Tool v4.2", layout="centered")
 
-st.title("🎭 Cast Substitution Tool (v4.1) — Streamlit Cloud Ready")
+st.title("🎭 Cast Substitution Tool (v4.2) — Printable & Notes Ready")
 
 # --- Upload Section ---
 st.header("📂 Step 1: Upload Cast & Skills Files")
@@ -22,6 +22,12 @@ if cast_file and skills_file:
 
     with st.expander("🔍 View Actor Skills"):
         st.dataframe(skills_df)
+
+    # --- Optional Role Notes ---
+    st.header("📝 Step 1.5: (Optional) Add Notes for Roles")
+    role_notes = {}
+    for role in cast_df[cast_df.columns[0]]:
+        role_notes[role] = st.text_input(f"Note for {role}", "")
 
     # --- Select Unavailable Actors ---
     st.header("😷 Step 2: Select Sick / Unavailable Actors")
@@ -96,13 +102,20 @@ if cast_file and skills_file:
             st.write(log)
 
         # --- Substitution Report ---
-        st.header("📄 Substitution Report")
+        st.header("📄 Substitution Report (Printable)")
+
+        report_df = pd.DataFrame([
+            {"Role": role, "Assigned Substitute": suggestions[role], "Note": role_notes[role]} for role in roles_to_cover
+        ])
 
         st.dataframe(
-            pd.DataFrame(
-                [{"Role": role, "Assigned Substitute": substitute} for role, substitute in suggestions.items()]
-            ).style.set_properties(**{'background-color': '#f9f9f9', 'border-color': 'black'})
+            report_df.style.set_table_styles(
+                [{"selector": "th", "props": [("background-color", "#333"), ("color", "white")]},
+                 {"selector": "td", "props": [("border", "1px solid black")]},
+                 {"selector": "tr:nth-child(even)", "props": [("background-color", "#f2f2f2")]},
+                 {"selector": "tr:nth-child(odd)", "props": [("background-color", "#ffffff")]},
+                 ]
+            ).set_properties(**{'text-align': 'left'})
         )
 
         st.info("Tip: Right-click the table and 'Print to PDF' for a clean, printable report.")
-
