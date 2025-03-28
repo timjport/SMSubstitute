@@ -1,6 +1,7 @@
 # 🎭 Cast Substitution Tool
 
 A simple Streamlit web app for automatically solving cast substitutions in a theatrical production.
+#Disclaimer: This is a "vibe-coded" Prototype
 
 ## Features
 - Handles multiple sick/unavailable actors
